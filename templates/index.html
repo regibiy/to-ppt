@@ -1,0 +1,87 @@
+{% extends "base.html" %} {% block title %} Generate PPT {% endblock %} {% block content %}
+<form action="{{ url_for('generate') }}" method="post" enctype="multipart/form-data" autocomplete="off">
+  <div>
+    <label for="caseNumber">Case Number</label>
+    <input type="text" name="caseNumber" id="caseNumber" />
+  </div>
+  <div>
+    <label for="unitModel">Unit Model</label>
+    <input type="text" name="unitModel" id="unitModel" />
+  </div>
+  <div>
+    <label for="serialNumber">Serial Number</label>
+    <input type="text" name="serialNumber" id="serialNumber" />
+  </div>
+  <div>
+    <label for="claimNumber">Claim Number</label>
+    <input type="text" name="claimNumber" id="claimNumber" />
+  </div>
+  <div>
+    <div id="previewWO">
+      <img src="" alt="Preview Work Order" id="previewWorkOrder" width="200" height="200" />
+    </div>
+    <label for="WO">Foto Form Work Order</label>
+    <input type="file" name="WO" id="WO" />
+  </div>
+  <div>
+    <button type="button" id="addPhoto">Tambah Foto Unit</button>
+  </div>
+  <div id="unitPhoto"></div>
+  <button type="submit" name="submitButton" id="submitButton">Download PPT</button>
+</form>
+<script>
+  const unitPhoto = document.getElementById("unitPhoto");
+
+  function previewImage(previewArea) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const preview = document.getElementById(previewArea);
+      preview.src = e.target.result;
+      preview.style.display = "block";
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  let counter = 0;
+
+  function addImage() {
+    counter++;
+
+    const inputInfo = document.createElement("input");
+    inputInfo.type = "text";
+    inputInfo.name = `addInfo${counter}`;
+    inputInfo.id = `addInfo${counter}`;
+
+    const inputPhoto = document.createElement("input");
+    inputPhoto.type = "file";
+    inputPhoto.name = `addPhoto${counter}`;
+    inputPhoto.id = `addPhoto${counter}`;
+
+    const previewPhoto = document.createElement("img");
+    previewPhoto.src = "";
+    previewPhoto.alt = "Preview Foto Unit";
+    previewPhoto.id = `previewPhoto${counter}`;
+    previewPhoto.width = 200;
+    previewPhoto.height = 200;
+
+    unitPhoto.append(inputInfo, previewPhoto, inputPhoto);
+
+    inputPhoto.addEventListener("change", (event) => {
+      previewImage(`previewPhoto${counter}`);
+    });
+  }
+
+  const addPhoto = document.getElementById("addPhoto");
+  addPhoto.addEventListener("click", (event) => {
+    addImage();
+  });
+
+  document.getElementById("WO").addEventListener("change", (event) => {
+    previewImage("previewWorkOrder");
+  });
+</script>
+{% endblock %}
