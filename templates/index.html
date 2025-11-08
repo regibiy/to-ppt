@@ -56,7 +56,7 @@
 
     const inputInfo = document.createElement("input");
     inputInfo.type = "text";
-    inputInfo.name = `addInfo${counter}`;
+    inputInfo.name = "addInfo[]";
     inputInfo.id = `addInfo${counter}`;
 
     const inputPhoto = document.createElement("input");
@@ -74,7 +74,7 @@
 
     const cancelButton = document.createElement("button");
     cancelButton.type = "button";
-    cancelButton.id = "cancelButton";
+    cancelButton.id = `cancelButton${counter}`;
     cancelButton.innerText = "Hapus ini";
 
     divider.append(inputInfo, previewPhoto, inputPhoto, cancelButton);

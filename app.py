@@ -1,17 +1,13 @@
 from flask import Flask, redirect, url_for, render_template, request, send_file
-
+from io import BytesIO
 from pptx import Presentation
 from pptx.util import Inches
-from tempfile import NamedTemporaryFile
+from PIL import ImageFont
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
-    # if request.method == "POST":
-    #     caseNumber = request.form["caseNumber"]
-    #     return redirect(url_for("generate", dataCaseNumber = caseNumber))
-    # else:
     return render_template("index.html")
 
 # @app.route("/about")
@@ -20,52 +16,77 @@ def home():
 
 @app.route("/generate", methods=["POST"])
 def generate():
+    def setPosSiShape(shape):
+        # begin get position and size shape
+        left = shape.left + Inches(0.03)
+        top = shape.top + Inches(0.03)
+        width = shape.width - Inches(0.05)
+        height = shape.height - Inches(0.05)
+        posSiShape = {
+            "left" : left,
+            "top" : top,
+            "width" : width,
+            "height" : height
+        }
+        return posSiShape
+        # end begin get position and size shape
+    
     caseNumber = request.form["caseNumber"]
     wo = request.files["WO"]
 
-    # photoUnitList = request.files.getlist("addPhoto[]")
-    # for i, photo in enumerate(photoUnitList, start=1):
-    #     if photo and photo.filename != "":
-    #          print(f"Gambar ke-{i}: {photo.filename}")
-    # return "OK"
-    
     # open template and set which slide
     prs = Presentation("template.pptx")
     slide = prs.slides[0]
 
+    # begin to find out name of shape dan type of shape
     # for i, shape in enumerate(slide.shapes):
-    #     print(i, "-", shape.name, "-", shape.shape_type)
+    #     print(i, "-", shape.name, "-", shape.shape_type, flush=True)
+    # end to find out name of shape dan type of shape
 
-    # return "OK"
-    
     # determine the first shape
     table = slide.shapes[0].table
     table.cell(0,1).text = caseNumber
 
     # determine the second shape
     shape = slide.shapes[1]
-
-    # begin get position and size shape
-    left = shape.left + Inches(0.03)
-    top = shape.top + Inches(0.03)
-    width = shape.width - Inches(0.05)
-    height = shape.height - Inches(0.05)
-    # end begin get position and size shape
+    getPosSiShape = setPosSiShape(shape)
     
-    slide.shapes.add_picture(wo, left, top, width, height)
+    woStream = BytesIO(wo.read())
+    woStream.seek(0)
+    slide.shapes.add_picture(woStream, getPosSiShape["left"], getPosSiShape["top"], getPosSiShape["width"], getPosSiShape["height"])
 
-    # begin insert image
-    # with NamedTemporaryFile(delete=False, suffix=".jpeg") as img_temp:
-    #     wo.save(img_temp.name)
+    # begin get all unit photo 
+    photoUnitList = request.files.getlist("addPhoto[]")
+    infoUnitList = request.form.getlist("addInfo[]")
+    for i, (photo, info) in enumerate(zip(photoUnitList, infoUnitList), start=1):
+        if photo and photo.filename != "":
+            if i == 1:
+                photoStream = BytesIO(photo.read())
+                getPosSiShape2 = setPosSiShape(slide.shapes[2])
+                photoStream.seek(0)
+                slide.shapes.add_picture(photoStream, getPosSiShape2["left"], getPosSiShape2["top"], getPosSiShape2["width"], getPosSiShape2["height"])
 
-    # slide.shapes.add_picture(img_temp.name, Inches(1), Inches(3), width=Inches(3), height=Inches(2))
-    # end insert image
+                oldPosInfo = setPosSiShape(slide.shapes[3])
+                spTree = slide.shapes._spTree
+                spTree.remove(slide.shapes[3]._element)
 
-    tmp = NamedTemporaryFile(delete=False, suffix=".pptx")
-    prs.save(tmp.name)
+                font = ImageFont.truetype("arial.ttf", 18)
+                bbox = font.getbbox(info)
+                textWidth = (bbox[2] - bbox[0]) / 96
+                newLeft = oldPosInfo["left"] + (oldPosInfo["width"] - Inches(textWidth)) / 2
+                
+                newShapeInfo = slide.shapes.add_shape(shape.auto_shape_type, newLeft, oldPosInfo["top"], Inches(textWidth), oldPosInfo["height"])
+                newShapeInfo.text = info
+            else:
+                prs.slides.add_slide(prs.slide_layouts[1])
+    # end get all unit photo
+
+    pptStream = BytesIO()
+    prs.save(pptStream)
+    pptStream.seek(0)
 
     return send_file(
-        tmp.name,
+        pptStream,
         as_attachment=True,
         download_name = f"{caseNumber}.pptx",
         mimetype="application/vnd.openxmlformats-officedocument.presentationml.presentation"
