@@ -2,7 +2,7 @@
 <form action="{{ url_for('generate') }}" method="post" enctype="multipart/form-data" autocomplete="off">
   <div>
     <label for="caseNumber">Case Number</label>
-    <input type="text" name="caseNumber" id="caseNumber" />
+    <input type="text" name="caseNumber" id="caseNumber" required />
   </div>
   <div>
     <label for="unitModel">Unit Model</label>
@@ -21,7 +21,7 @@
       <img src="" alt="Preview Work Order" id="previewWorkOrder" width="200" height="200" />
     </div>
     <label for="WO">Foto Form Work Order</label>
-    <input type="file" name="WO" id="WO" />
+    <input type="file" name="WO" id="WO" accept="image/*" />
   </div>
   <div>
     <button type="button" id="addPhoto">Tambah Foto Unit</button>
@@ -51,6 +51,9 @@
   function addImage() {
     counter++;
 
+    const divider = document.createElement("div");
+    divider.id = `unitPhotoChild${counter}`;
+
     const inputInfo = document.createElement("input");
     inputInfo.type = "text";
     inputInfo.name = `addInfo${counter}`;
@@ -58,8 +61,9 @@
 
     const inputPhoto = document.createElement("input");
     inputPhoto.type = "file";
-    inputPhoto.name = `addPhoto${counter}`;
+    inputPhoto.name = "addPhoto[]";
     inputPhoto.id = `addPhoto${counter}`;
+    inputPhoto.accept = "image/*";
 
     const previewPhoto = document.createElement("img");
     previewPhoto.src = "";
@@ -68,10 +72,20 @@
     previewPhoto.width = 200;
     previewPhoto.height = 200;
 
-    unitPhoto.append(inputInfo, previewPhoto, inputPhoto);
+    const cancelButton = document.createElement("button");
+    cancelButton.type = "button";
+    cancelButton.id = "cancelButton";
+    cancelButton.innerText = "Hapus ini";
+
+    divider.append(inputInfo, previewPhoto, inputPhoto, cancelButton);
+    unitPhoto.append(divider);
 
     inputPhoto.addEventListener("change", (event) => {
-      previewImage(`previewPhoto${counter}`);
+      previewImage(previewPhoto.id);
+    });
+
+    cancelButton.addEventListener("click", (event) => {
+      divider.remove();
     });
   }
 
