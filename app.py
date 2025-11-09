@@ -3,6 +3,7 @@ from io import BytesIO
 from pptx import Presentation
 from pptx.util import Inches
 from PIL import ImageFont
+from pptx.enum.text import PP_ALIGN
 
 app = Flask(__name__)
 
@@ -16,6 +17,42 @@ def home():
 
 @app.route("/generate", methods=["POST"])
 def generate():
+    # need to count unit photo to determine how many table will be created
+    caseNumber = request.form["caseNumber"]
+
+    prs = Presentation("template.pptx")
+    SLD_LAYOUT_TITLE_AND_CONTENT = 6
+    slideLayout = prs.slide_layouts[SLD_LAYOUT_TITLE_AND_CONTENT]
+    slide = prs.slides.add_slide(slideLayout)
+
+    newTable = slide.shapes.add_table(2, 2, Inches(0.5), Inches(0.5), prs.slide_width - (2 * Inches(0.5)), Inches(1)) # add elif one unit or not
+    new = newTable.table
+
+    test = new.cell(0, 0)
+    test.text = "Ini baris 1 kolom 1"
+    new.cell(0, 1).text = "Ini baris 1 kolom 2"
+    paragraph = test.text_frame.paragraphs[0]
+    paragraph.alignment = PP_ALIGN.CENTER    
+
+    
+    # for row in new.rows:
+    #     for cell in row.cells:
+    #         cell.fill.background() 
+
+    pptStream = BytesIO()
+    prs.save(pptStream)
+    pptStream.seek(0)
+
+    return send_file(
+        pptStream,
+        as_attachment=True,
+        download_name = f"{caseNumber}.pptx",
+        mimetype="application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    )
+
+
+@app.route("/generate2", methods=["POST"])
+def generate2():
     def setPosSiShape(shape):
         # begin get position and size shape
         left = shape.left + Inches(0.03)
@@ -79,6 +116,7 @@ def generate():
                 newShapeInfo.text = info
             else:
                 prs.slides.add_slide(prs.slide_layouts[1])
+
     # end get all unit photo
 
     pptStream = BytesIO()
