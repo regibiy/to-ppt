@@ -1,34 +1,36 @@
 {% extends "base.html" %} {% block title %} Generate PPT {% endblock %} {% block content %}
-<form action="{{ url_for('generate') }}" method="post" enctype="multipart/form-data" autocomplete="off">
-  <div>
-    <label for="caseNumber">Case Number</label>
-    <input type="text" name="caseNumber" id="caseNumber" required />
-  </div>
-  <div>
-    <label for="unitModel">Unit Model</label>
-    <input type="text" name="unitModel" id="unitModel" />
-  </div>
-  <div>
-    <label for="serialNumber">Serial Number</label>
-    <input type="text" name="serialNumber" id="serialNumber" />
-  </div>
-  <div>
-    <label for="claimNumber">Claim Number</label>
-    <input type="text" name="claimNumber" id="claimNumber" />
-  </div>
-  <div>
-    <div id="previewWO">
-      <img src="" alt="Preview Work Order" id="previewWorkOrder" width="200" height="200" />
+<div class="container" style="margin-top: 5rem">
+  <form action="{{ url_for('generate') }}" method="post" enctype="multipart/form-data" autocomplete="off">
+    <div class="mb-3">
+      <label for="caseNumber" class="form-label">Case Number</label>
+      <input type="text" class="form-control" id="caseNumber" name="caseNumber" placeholder="Masukkan Case Number di Sini" required />
     </div>
-    <label for="WO">Foto Form Work Order</label>
-    <input type="file" name="WO" id="WO" accept="image/*" />
-  </div>
-  <div>
-    <button type="button" id="addPhoto">Tambah Foto Unit</button>
-  </div>
-  <div id="unitPhoto"></div>
-  <button type="submit" name="submitButton" id="submitButton">Download PPT</button>
-</form>
+    <div class="mb-3">
+      <label for="unitModel" class="form-label">Unit Model</label>
+      <input type="text" class="form-control" id="unitModel" name="unitModel" placeholder="Masukkan Unit Model di Sini" required />
+    </div>
+    <div class="mb-3">
+      <label for="serialNumber" class="form-label">Serial Number</label>
+      <input type="text" class="form-control" id="serialNumber" name="serialNumber" placeholder="Masukkan Serial Number di Sini" required />
+    </div>
+    <div class="mb-3">
+      <label for="claimNumber" class="form-label">Claim Number</label>
+      <input type="text" class="form-control" id="claimNumber" name="claimNumber" placeholder="Masukkan Claim Number di Sini" required />
+    </div>
+    <div class="mb-3">
+      <div id="previewWO">
+        <img src="" alt="Preview Work Order" id="previewWorkOrder" class="img-thumbnail mb-3" />
+      </div>
+      <label for="WO">Foto Form Work Order</label>
+      <input type="file" name="WO" id="WO" class="form-control" accept="image/*" />
+    </div>
+    <div>
+      <button type="button" id="addPhoto" class="btn btn-success">Tambah Foto Unit</button>
+    </div>
+    <div id="unitPhoto"></div>
+    <button type="submit" name="submitButton" id="submitButton">Download PPT</button>
+  </form>
+</div>
 <script>
   const unitPhoto = document.getElementById("unitPhoto");
 

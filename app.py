@@ -1,4 +1,3 @@
-import sys
 from flask import Flask, redirect, url_for, render_template, request, send_file
 from io import BytesIO
 from pptx import Presentation
@@ -119,14 +118,14 @@ def generate():
                 rectangleShape = slide2.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, y, shapeWidth, height)
 
             if rectangleShape is not None:
-                rectangleShape.text = "Ini contoh keterangan yang akan diberikan oleh mekanik"
+                rectangleShape.text = info
                 testLeft = rectangleShape.left
                 testTop = rectangleShape.top
                 widthCol0 = Inches(3)
                 heightRow0 = rectangleShape.height
 
             if slide2 is not None:
-                slide2.shapes.add_picture("meneketehek.png", testLeft, testTop + heightRow0, widthCol0, Inches(3))
+                slide2.shapes.add_picture(photo, testLeft, testTop + heightRow0, widthCol0, Inches(3))
     # end get all unit photo
 
     pptStream = BytesIO()
