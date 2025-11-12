@@ -1,10 +1,10 @@
 from flask import Flask, redirect, url_for, render_template, request, send_file
 from io import BytesIO
 from pptx import Presentation
-from pptx.util import Inches
+from pptx.util import Inches, Pt
 from PIL import ImageFont
-from pptx.enum.text import PP_ALIGN
 from pptx.enum.shapes import MSO_SHAPE
+from pptx.dml.color import RGBColor
 
 app = Flask(__name__)
 
@@ -12,48 +12,49 @@ app = Flask(__name__)
 def home():
     return render_template("index.html")
 
-# @app.route("/about")
-# def about():
-#     return render_template("about.html")
-
-# begin set table transparent
-# for row in new.rows:
-#     for cell in row.cells:
-#         cell.fill.background()
-# end set table transparent 
-
 @app.route("/generate", methods=["POST"])
 def generate():
     def setPosSiShape(shape):
-        # begin get position and size shape
         left = shape.left + Inches(0.03)
         top = shape.top + Inches(0.03)
         width = shape.width - Inches(0.05)
         height = shape.height - Inches(0.05)
         posSiShape = {"left" : left, "top" : top, "width" : width, "height" : height}
         return posSiShape
-        # end begin get position and size shape
     
-    caseNumber = request.form["caseNumber"]
-    wo = request.files["WO"]
+    caseNumber = request.form["caseNumber"].upper()
+    unitModel = request.form["unitModel"].upper()
+    serialNumber = request.form["serialNumber"].upper()
+    claimNumber = request.form["claimNumber"].upper()
 
-    # open template and set which slide
     prs = Presentation("template.pptx")
     slide = prs.slides[0]
 
-    # begin to find out name of shape dan type of shape
+    # # begin to find out name of shape dan type of shape
     # for i, shape in enumerate(slide.shapes):
     #     print(i, "-", shape.name, "-", shape.shape_type, flush=True)
-    # end to find out name of shape dan type of shape
+    # # end to find out name of shape dan type of shape
 
-    # determine the first shape
-    table = slide.shapes[0].table
-    table.cell(0,1).text = caseNumber
+    table = slide.shapes[2].table
 
-    # determine the second shape
-    shape = slide.shapes[1]
+    data = [caseNumber, unitModel, serialNumber, claimNumber]
+
+    for row in range(len(data)):
+        cell = table.cell(row, 1)
+        cell.text = str(data[row])
+        p = cell.text_frame.paragraphs[0]
+        if not p.runs:
+            run = p.add_run()
+            run.text = cell.text
+        else:
+            run = p.runs[0]
+        run.font.color.rgb = RGBColor(255, 255, 255)
+        run.font.bold = True
+
+    shape = slide.shapes[0]
     getPosSiShape = setPosSiShape(shape)
-    
+
+    wo = request.files["WO"]
     woStream = BytesIO(wo.read())
     woStream.seek(0)
     slide.shapes.add_picture(woStream, getPosSiShape["left"], getPosSiShape["top"], getPosSiShape["width"], getPosSiShape["height"])
@@ -71,24 +72,38 @@ def generate():
     rectangleShape = None
 
     for i, (photo, info) in enumerate(zip(photoUnitList, infoUnitList), start=1):
-        # if photo and photo.filename != "":
+        if photo and photo.filename != "":
             if i == 1:
                 photoStream = BytesIO(photo.read())
-                getPosSiShape2 = setPosSiShape(slide.shapes[2])
+                getPosSiShape2 = setPosSiShape(slide.shapes[1])
                 photoStream.seek(0)
                 slide.shapes.add_picture(photoStream, getPosSiShape2["left"], getPosSiShape2["top"], getPosSiShape2["width"], getPosSiShape2["height"])
 
-                oldPosInfo = setPosSiShape(slide.shapes[3])
-                spTree = slide.shapes._spTree
-                spTree.remove(slide.shapes[3]._element)
+                if info and any(info):
+                    oldPosInfo = setPosSiShape(slide.shapes[3])
+                    spTree = slide.shapes._spTree
+                    spTree.remove(slide.shapes[3]._element)
 
-                font = ImageFont.truetype("calibri.ttf", 18)
-                bbox = font.getbbox(info)
-                textWidth = (bbox[2] - bbox[0]) / 96
-                newLeft = oldPosInfo["left"] + (oldPosInfo["width"] - Inches(textWidth)) / 2
-                    
-                newShapeInfo = slide.shapes.add_shape(shape.auto_shape_type, newLeft, oldPosInfo["top"], Inches(textWidth), oldPosInfo["height"])
-                newShapeInfo.text = info
+                    font = ImageFont.truetype("calibri.ttf", 18)
+                    bbox = font.getbbox(info)
+                    textWidth = (bbox[2] - bbox[0]) / 96
+                    newLeft = oldPosInfo["left"] + (oldPosInfo["width"] - Inches(textWidth)) / 2
+
+                    newShapeInfo = slide.shapes.add_shape(shape.auto_shape_type, newLeft, oldPosInfo["top"], Inches(textWidth), oldPosInfo["height"])
+                    newShapeInfo.text = info
+
+                    newShapeInfo.fill.solid()
+                    newShapeInfo.fill.fore_color.rgb =RGBColor(255, 255, 255)
+                    newShapeInfo.fill.background()
+
+                    line = newShapeInfo.line
+                    line.color.rgb = RGBColor(0, 0, 0)
+                    line.width = Pt(1)
+
+                    textFrame = newShapeInfo.text_frame
+                    p =textFrame.paragraphs[0]
+                    run = p.runs[0]
+                    run.font.color.rgb = RGBColor(0, 0, 0)
 
             if i >= 2 and (i - 2) % 4 == 0: 
                 slide2 = prs.slides.add_slide(slideLayout)
@@ -97,7 +112,6 @@ def generate():
 
             if (currentIndex != tempIndex):
                 row = 1
-
             tempIndex = currentIndex
 
             cols = 2
