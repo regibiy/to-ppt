@@ -8,20 +8,20 @@ from pptx.dml.color import RGBColor
 
 app = Flask(__name__)
 
+def setPosSiShape(shape):
+    left = shape.left + Inches(0.03)
+    top = shape.top + Inches(0.03)
+    width = shape.width - Inches(0.05)
+    height = shape.height - Inches(0.05)
+    posSiShape = {"left" : left, "top" : top, "width" : width, "height" : height}
+    return posSiShape
+
 @app.route("/")
 def home():
     return render_template("index.html")
 
 @app.route("/generate", methods=["POST"])
 def generate():
-    def setPosSiShape(shape):
-        left = shape.left + Inches(0.03)
-        top = shape.top + Inches(0.03)
-        width = shape.width - Inches(0.05)
-        height = shape.height - Inches(0.05)
-        posSiShape = {"left" : left, "top" : top, "width" : width, "height" : height}
-        return posSiShape
-    
     caseNumber = request.form["caseNumber"].upper()
     unitModel = request.form["unitModel"].upper()
     serialNumber = request.form["serialNumber"].upper()

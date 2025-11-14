@@ -24,7 +24,7 @@
             <img src="" alt="Preview Work Order" id="previewWorkOrder" class="img-thumbnail mb-3" width="200" height="200" />
           </div>
           <label for="WO" class="form-label">Foto Form Work Order</label>
-          <input type="file" name="WO" id="WO" class="form-control" accept="image/*" />
+          <input type="file" name="WO" id="WO" class="form-control" accept="image/*" required />
         </div>
         <hr />
         <div class="text-end mb-3">
@@ -38,83 +38,4 @@
     </div>
   </form>
 </div>
-<script>
-  const unitPhoto = document.getElementById("unitPhoto");
-
-  function previewImage(previewArea) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const preview = document.getElementById(previewArea);
-      preview.src = e.target.result;
-      preview.style.display = "block";
-    };
-
-    reader.readAsDataURL(file);
-  }
-
-  let counter = 0;
-
-  function addImage() {
-    counter++;
-
-    const divider = document.createElement("div");
-    divider.id = `unitPhotoChild${counter}`;
-    divider.classList = "mb-3 border p-3 rounded";
-
-    const labelInfo = document.createElement("label");
-    labelInfo.htmlFor = `addInfo${counter}`;
-    labelInfo.classList = "form-label";
-    labelInfo.innerText = "Keterangan Foto";
-
-    const inputInfo = document.createElement("input");
-    inputInfo.type = "text";
-    inputInfo.name = "addInfo[]";
-    inputInfo.id = `addInfo${counter}`;
-    inputInfo.classList = "form-control mb-3";
-
-    const inputPhoto = document.createElement("input");
-    inputPhoto.type = "file";
-    inputPhoto.name = "addPhoto[]";
-    inputPhoto.id = `addPhoto${counter}`;
-    inputPhoto.accept = "image/*";
-    inputPhoto.classList = "form-control mb-3";
-
-    const previewPhoto = document.createElement("img");
-    previewPhoto.src = "";
-    previewPhoto.alt = "Preview Foto Unit";
-    previewPhoto.id = `previewPhoto${counter}`;
-    previewPhoto.width = 200;
-    previewPhoto.height = 200;
-    previewPhoto.classList = "img-thumbnail mb-3";
-
-    const cancelButton = document.createElement("button");
-    cancelButton.type = "button";
-    cancelButton.id = `cancelButton${counter}`;
-    cancelButton.innerText = "Hapus Foto Unit";
-    cancelButton.classList = "btn btn-outline-danger";
-
-    divider.append(labelInfo, inputInfo, previewPhoto, inputPhoto, cancelButton);
-    unitPhoto.append(divider);
-
-    inputPhoto.addEventListener("change", (event) => {
-      previewImage(previewPhoto.id);
-    });
-
-    cancelButton.addEventListener("click", (event) => {
-      divider.remove();
-    });
-  }
-
-  const addPhoto = document.getElementById("addPhoto");
-  addPhoto.addEventListener("click", (event) => {
-    addImage();
-  });
-
-  document.getElementById("WO").addEventListener("change", (event) => {
-    previewImage("previewWorkOrder");
-  });
-</script>
 {% endblock %}
