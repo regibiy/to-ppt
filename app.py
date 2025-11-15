@@ -1,8 +1,9 @@
+import os
 from flask import Flask, redirect, url_for, render_template, request, send_file
 from io import BytesIO
 from pptx import Presentation
 from pptx.util import Inches, Pt
-from PIL import ImageFont
+from PIL import ImageFont, Image, ImageOps
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.dml.color import RGBColor
 
@@ -15,6 +16,13 @@ def setPosSiShape(shape):
     height = shape.height - Inches(0.05)
     posSiShape = {"left" : left, "top" : top, "width" : width, "height" : height}
     return posSiShape
+
+formatMap = {
+    ".jpg": "JPEG",
+    ".jpeg": "JPEG",
+    ".png": "PNG",
+    ".webp": "WEBP"
+    }
 
 @app.route("/")
 def home():
@@ -36,7 +44,6 @@ def generate():
     # # end to find out name of shape dan type of shape
 
     table = slide.shapes[2].table
-
     data = [caseNumber, unitModel, serialNumber, claimNumber]
 
     for row in range(len(data)):
@@ -55,9 +62,18 @@ def generate():
     getPosSiShape = setPosSiShape(shape)
 
     wo = request.files["WO"]
+    ext = os.path.splitext(wo.filename)[1].lower()
+    imgFormat = formatMap.get(ext, "JPEG")
+
     woStream = BytesIO(wo.read())
     woStream.seek(0)
-    slide.shapes.add_picture(woStream, getPosSiShape["left"], getPosSiShape["top"], getPosSiShape["width"], getPosSiShape["height"])
+    img = Image.open(woStream)
+    img = ImageOps.exif_transpose(img)
+    
+    fixedStream = BytesIO()
+    img.save(fixedStream, format=imgFormat)
+    fixedStream.seek(0)
+    slide.shapes.add_picture(fixedStream, getPosSiShape["left"], getPosSiShape["top"], getPosSiShape["width"], getPosSiShape["height"])
 
     # begin get all unit photo 
     photoUnitList = request.files.getlist("addPhoto[]")
@@ -72,74 +88,108 @@ def generate():
     rectangleShape = None
 
     for i, (photo, info) in enumerate(zip(photoUnitList, infoUnitList), start=1):
-        if photo and photo.filename != "":
-            if i == 1:
-                photoStream = BytesIO(photo.read())
-                getPosSiShape2 = setPosSiShape(slide.shapes[1])
-                photoStream.seek(0)
-                slide.shapes.add_picture(photoStream, getPosSiShape2["left"], getPosSiShape2["top"], getPosSiShape2["width"], getPosSiShape2["height"])
+        if i == 1:
+            ext = os.path.splitext(photo.filename)[1].lower()
+            imgFormat = formatMap.get(ext, "JPEG")
+            
+            photoStream = BytesIO(photo.read())
+            getPosSiShape2 = setPosSiShape(slide.shapes[1])
+            photoStream.seek(0)
+            
+            img = Image.open(photoStream)
+            img = ImageOps.exif_transpose(img)
+    
+            fixedStream = BytesIO()
+            img.save(fixedStream, format=imgFormat)
+            fixedStream.seek(0)                         
 
-                if info and any(info):
-                    oldPosInfo = setPosSiShape(slide.shapes[3])
-                    spTree = slide.shapes._spTree
-                    spTree.remove(slide.shapes[3]._element)
+            slide.shapes.add_picture(fixedStream, getPosSiShape2["left"], getPosSiShape2["top"], getPosSiShape2["width"], getPosSiShape2["height"])
 
-                    font = ImageFont.truetype("calibri.ttf", 18)
-                    bbox = font.getbbox(info)
-                    textWidth = (bbox[2] - bbox[0]) / 96
-                    newLeft = oldPosInfo["left"] + (oldPosInfo["width"] - Inches(textWidth)) / 2
+            oldPosInfo = setPosSiShape(slide.shapes[3])
+            spTree = slide.shapes._spTree
+            spTree.remove(slide.shapes[3]._element)
+            
+            if info and any(info):
+                font = ImageFont.truetype("calibri.ttf", 18)
+                bbox = font.getbbox(info)
+                textWidth = (bbox[2] - bbox[0]) / 96
+                newLeft = oldPosInfo["left"] + (oldPosInfo["width"] - Inches(textWidth)) / 2
 
-                    newShapeInfo = slide.shapes.add_shape(shape.auto_shape_type, newLeft, oldPosInfo["top"], Inches(textWidth), oldPosInfo["height"])
-                    newShapeInfo.text = info
+                newShapeInfo = slide.shapes.add_shape(shape.auto_shape_type, newLeft, oldPosInfo["top"], Inches(textWidth), oldPosInfo["height"] + Inches(0.2))
+                newShapeInfo.text = info
 
-                    newShapeInfo.fill.solid()
-                    newShapeInfo.fill.fore_color.rgb =RGBColor(255, 255, 255)
-                    newShapeInfo.fill.background()
+                newShapeInfo.fill.solid()
+                newShapeInfo.fill.fore_color.rgb = RGBColor(0, 176, 80)
 
-                    line = newShapeInfo.line
-                    line.color.rgb = RGBColor(0, 0, 0)
-                    line.width = Pt(1)
+                line = newShapeInfo.line
+                line.color.rgb = RGBColor(255, 255, 255)
+                line.width = Pt(1)
 
-                    textFrame = newShapeInfo.text_frame
-                    p =textFrame.paragraphs[0]
-                    run = p.runs[0]
-                    run.font.color.rgb = RGBColor(0, 0, 0)
+                textFrame = newShapeInfo.text_frame
+                p =textFrame.paragraphs[0]
+                run = p.runs[0]
+                run.font.color.rgb = RGBColor(255, 255, 255)
 
-            if i >= 2 and (i - 2) % 4 == 0: 
-                slide2 = prs.slides.add_slide(slideLayout)
-                slideWidth = prs.slide_width
-                currentIndex = len(prs.slides)
+        if i >= 2 and (i - 2) % 4 == 0: 
+            slide2 = prs.slides.add_slide(slideLayout)
+            slideWidth = prs.slide_width
+            currentIndex = len(prs.slides)
 
-            if (currentIndex != tempIndex):
-                row = 1
-            tempIndex = currentIndex
+        if (currentIndex != tempIndex):
+            row = 1
+        tempIndex = currentIndex
 
-            cols = 2
-            gapY = Inches(1.25)
-            margin = Inches(0.3)
-            height = Inches(0.5)
-            shapeWidth = (slideWidth - (3 * margin)) / 2
+        cols = 2
+        gapY = Inches(1.25)
+        margin = Inches(0.3)
+        height = Inches(0.5)
+        shapeWidth = (slideWidth - (3 * margin)) / 2
 
-            if slide2 is not None:
-                row += 1
-                col = i % cols
-                row2 = row // cols
-                x = margin + col * (shapeWidth + margin)
-                if row2 == 1:
-                    y = Inches(0.2)
-                else:
-                    y = margin + row2 * (height + gapY)
-                rectangleShape = slide2.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, y, shapeWidth, height)
+        if slide2 is not None:
+            row += 1
+            col = i % cols
+            row2 = row // cols
+            x = margin + col * (shapeWidth + margin)
+            if row2 == 1:
+                y = Inches(0.2)
+            else:
+                y = margin + row2 * (height + gapY)
 
-            if rectangleShape is not None:
-                rectangleShape.text = info
-                testLeft = rectangleShape.left
-                testTop = rectangleShape.top
-                widthCol0 = Inches(3)
-                heightRow0 = rectangleShape.height
+            rectangleShape = slide2.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, y, shapeWidth, height)
 
-            if slide2 is not None:
-                slide2.shapes.add_picture(photo, testLeft, testTop + heightRow0, widthCol0, Inches(3))
+            rectangleShape.fill.solid()
+            rectangleShape.fill.fore_color.rgb = RGBColor(0, 176, 80)
+
+            line = rectangleShape.line
+            line.color.rgb = RGBColor(255, 255, 255)
+            line.width = Pt(1)
+
+        if rectangleShape is not None:
+            rectangleShape.text = info
+            testLeft = rectangleShape.left
+            testTop = rectangleShape.top
+            widthCol0 = shapeWidth
+            heightRow0 = rectangleShape.height
+
+            textFrame = rectangleShape.text_frame
+            p =textFrame.paragraphs[0]
+            run = p.runs[0]
+            run.font.color.rgb = RGBColor(255, 255, 255)
+
+        if slide2 is not None:
+            ext = os.path.splitext(photo.filename)[1].lower()
+            imgFormat = formatMap.get(ext, "JPEG")
+            
+            photoStream = BytesIO(photo.read())
+            photoStream.seek(0)
+            
+            img = Image.open(photoStream)
+            img = ImageOps.exif_transpose(img)
+    
+            fixedStream = BytesIO()
+            img.save(fixedStream, format=imgFormat)
+            fixedStream.seek(0)     
+            slide2.shapes.add_picture(fixedStream, testLeft, testTop + heightRow0, widthCol0, Inches(3))
     # end get all unit photo
 
     pptStream = BytesIO()

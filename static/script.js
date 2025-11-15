@@ -1,7 +1,8 @@
 const unitPhoto = document.getElementById("unitPhoto");
-let caseNumberInput = document.getElementById("caseNumber");
-let unitModelInput = document.getElementById("unitModel");
-let serialNumberInput = document.getElementById("serialNumber");
+const caseNumberInput = document.getElementById("caseNumber");
+const unitModelInput = document.getElementById("unitModel");
+const serialNumberInput = document.getElementById("serialNumber");
+const WOInput = document.getElementById("WO");
 const submitButton = document.getElementById("submitButton");
 
 function previewImage(previewArea) {
@@ -18,25 +19,57 @@ function previewImage(previewArea) {
   reader.readAsDataURL(file);
 }
 
-async function validateInfoInputs() {
+async function validateInfoUnitInputs() {
   const infoInputs = document.querySelectorAll('input[name="addInfo[]"]');
-  for (const input of infoInputs) {
+  const photoInputs = document.querySelectorAll('input[name="addPhoto[]"]');
+  if (infoInputs.length < 1 && photoInputs.length < 1) return false;
+  for (let input of infoInputs) {
     if (input.value.trim() === "") {
-      const result = await Swal.fire({
-        title: "Input masih kosong",
-        text: "Mau isi dulu tidak?",
+      let id = input.parentElement;
+      let result = await Swal.fire({
+        title: "Uups...",
+        text: `Info foto dengan ID #${id.id} masih kosong. Apakah Anda ingin melengkapinya?`,
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "Isi",
-        cancelButtonText: "Lanjut",
+        confirmButtonText: "Ya, lengkapi!",
+        cancelButtonText: "Tidak, lanjutkan!",
         returnFocus: false,
       });
-
       if (result.isConfirmed) {
         input.focus();
         return false;
-      } else if (result.isDenied) {
-        continue;
+      } else continue;
+    }
+  }
+
+  for (let input of photoInputs) {
+    let id = input.parentElement;
+    if (input.files.length === 0) {
+      const result = await Swal.fire({
+        title: "Error...",
+        text: `Foto unit dengan ID #${id.id} masih kosong!`,
+        icon: "error",
+        confirmButtonText: "Oke",
+        returnFocus: false,
+      });
+      if (result.isConfirmed) {
+        input.focus();
+        return false;
+      }
+    } else {
+      let file = input.files[0];
+      if (!file.type.startsWith("image/")) {
+        let result = await Swal.fire({
+          title: "Error...",
+          text: `${file.name} bukan foto!`,
+          icon: "error",
+          confirmButtonText: "Oke",
+          returnFocus: false,
+        });
+        if (result.isConfirmed) {
+          input.focus();
+          return false;
+        }
       }
     }
   }
@@ -47,52 +80,76 @@ document.addEventListener("DOMContentLoaded", () => {
   caseNumberInput.focus();
   submitButton.addEventListener("click", async (event) => {
     event.preventDefault();
-    const valid = await validateInfoInputs();
-    if (valid) alert("oke");
+    let caseNumber = caseNumberInput.value.trim();
+    let unitModel = unitModelInput.value.trim();
+    let serialNumber = serialNumberInput.value.trim();
+    let WO = WOInput.files.length;
+    if (caseNumber.length < 1) {
+      Swal.fire({
+        title: "Uups...",
+        text: "Lengkapi data Case Number!",
+        icon: "warning",
+        confirmButtonText: "Oke",
+        returnFocus: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          caseNumberInput.value = caseNumber;
+          caseNumberInput.focus();
+        }
+      });
+      return;
+    }
 
-    // caseNumber = caseNumberInput.value.trim();
-    // unitModel = unitModelInput.value.trim();
-    // serialNumber = serialNumberInput.value.trim();
-    // if (caseNumber.length < 1) {
-    //   Swal.fire({
-    //     title: "Uups...",
-    //     text: "Lengkapi data Case Number!",
-    //     icon: "warning",
-    //     confirmButtonText: "Oke",
-    //     returnFocus: false,
-    //   }).then((result) => {
-    //     if (result.isConfirmed) {
-    //       caseNumberInput.value = caseNumber;
-    //       caseNumberInput.focus();
-    //     }
-    //   });
-    // } else if (unitModel.length < 1) {
-    //   Swal.fire({
-    //     title: "Uups...",
-    //     text: "Lengkapi data Unit Model!",
-    //     icon: "warning",
-    //     confirmButtonText: "Oke",
-    //     returnFocus: false,
-    //   }).then((result) => {
-    //     if (result.isConfirmed) {
-    //       unitModelInput.value = unitModel;
-    //       unitModelInput.focus();
-    //     }
-    //   });
-    // } else {
-    //   Swal.fire({
-    //     title: "Uups...",
-    //     text: "Lengkapi data Serial Number!",
-    //     icon: "warning",
-    //     confirmButtonText: "Oke",
-    //     returnFocus: false,
-    //   }).then((result) => {
-    //     if (result.isConfirmed) {
-    //       serialNumberInput.value = serialNumber;
-    //       serialNumberInput.focus();
-    //     }
-    //   });
-    // }
+    if (unitModel.length < 1) {
+      Swal.fire({
+        title: "Uups...",
+        text: "Lengkapi data Unit Model!",
+        icon: "warning",
+        confirmButtonText: "Oke",
+        returnFocus: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          unitModelInput.value = unitModel;
+          unitModelInput.focus();
+        }
+      });
+      return;
+    }
+
+    if (serialNumber.length < 1) {
+      Swal.fire({
+        title: "Uups...",
+        text: "Lengkapi data Serial Number!",
+        icon: "warning",
+        confirmButtonText: "Oke",
+        returnFocus: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          serialNumberInput.value = serialNumber;
+          serialNumberInput.focus();
+        }
+      });
+      return;
+    }
+
+    if (WO < 1) {
+      Swal.fire({
+        title: "Uups...",
+        text: "Lengkapi data Foto Work Order!",
+        icon: "warning",
+        confirmButtonText: "Oke",
+        returnFocus: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          WOInput.focus();
+        }
+      });
+      return;
+    }
+
+    let = statusInfoUnitValidation = false;
+    statusInfoUnitValidation = await validateInfoUnitInputs();
+    if (statusInfoUnitValidation) document.getElementById("formPPT").submit();
   });
 
   let counter = 0;
@@ -137,8 +194,8 @@ document.addEventListener("DOMContentLoaded", () => {
     cancelButton.classList = "btn btn-outline-danger";
 
     const pId = document.createElement("p");
-    pId.classList = "text-secondary fst-italic text-end p-0 m-0 fs-12-custom";
-    pId.innerText = `UnitPhotoID #${counter}`;
+    pId.classList = "text-secondary fst-italic text-end p-0 m-0 fs-12-px";
+    pId.innerText = `#unitPhotoChild${counter}`;
 
     divider.append(labelInfo, inputInfo, previewPhoto, inputPhoto, cancelButton, pId);
     unitPhoto.append(divider);
@@ -158,10 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
   addPhoto.addEventListener("click", (event) => {
     let id = addImage();
     document.getElementById(id.inputInfoId).focus();
-    document.getElementById(id.dividerId).scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    document.getElementById(id.dividerId).scrollIntoView({ block: "start" });
   });
 
   document.getElementById("WO").addEventListener("change", (event) => {
