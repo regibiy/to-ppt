@@ -110,7 +110,8 @@ def generate():
             spTree.remove(slide.shapes[3]._element)
             
             if info and any(info):
-                font = ImageFont.truetype("calibri.ttf", 18)
+                fontPath = os.path.join(os.path.dirname(__file__), "fonts", "calibri-regular.ttf")
+                font = ImageFont.truetype(fontPath, 18)
                 bbox = font.getbbox(info)
                 textWidth = (bbox[2] - bbox[0]) / 96
                 newLeft = oldPosInfo["left"] + (oldPosInfo["width"] - Inches(textWidth)) / 2
