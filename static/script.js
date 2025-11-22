@@ -24,10 +24,12 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.onload = function (e) {
       preview.style.display = "block";
       preview.src = e.target.result;
-      window.scrollTo({
-        left: 0,
-        top: document.body.scrollHeight,
-      });
+      setTimeout(() => {
+        window.scrollTo({
+          left: 0,
+          top: document.body.scrollHeight,
+        });
+      }, 300);
     };
 
     reader.readAsDataURL(file);
