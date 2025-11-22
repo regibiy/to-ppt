@@ -4,6 +4,31 @@ html {
   scroll-behavior: smooth;
 }
 
+.btn-success-custom {
+  background-color: rgb(54, 124, 43) !important;
+  color: rgb(255, 255, 255) !important;
+  opacity: 0.85 !important;
+  transition: opacity 0.2s ease !important;
+}
+
+.btn-success-outline-custom {
+  background-color: rgb(255, 255, 255) !important;
+  color: rgb(54, 124, 43) !important;
+  border: 1px solid rgb(54, 124, 43);
+  transition: background-color 0.3s ease, color 0.3s ease, border 0.3s ease !important;
+}
+
+.btn-success-outline-custom:hover,
+.btn-success-outline-custom:active {
+  background-color: rgb(54, 124, 43) !important;
+  color: rgb(255, 255, 255) !important;
+}
+
+.btn-success-custom:hover,
+.btn-success-custom:active {
+  opacity: 1 !important;
+}
+
 .fs-12-px {
   font-size: 12px;
 }

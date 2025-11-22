@@ -1,67 +1,67 @@
-const unitPhoto = document.getElementById("unitPhoto");
-const caseNumberInput = document.getElementById("caseNumber");
-const unitModelInput = document.getElementById("unitModel");
-const serialNumberInput = document.getElementById("serialNumber");
-const WOInput = document.getElementById("WO");
-const submitButton = document.getElementById("submitButton");
+document.addEventListener("DOMContentLoaded", () => {
+  const unitPhoto = document.getElementById("unitPhoto");
+  const caseNumberInput = document.getElementById("caseNumber");
+  const unitModelInput = document.getElementById("unitModel");
+  const serialNumberInput = document.getElementById("serialNumber");
+  const claimNumberInput = document.getElementById("claimNumber");
+  const WOInput = document.getElementById("WO");
+  const previewWO = document.getElementById("previewWorkOrder");
+  const modalEl = document.getElementById("submit");
+  const modal = new bootstrap.Modal(modalEl);
+  let counter = 0;
 
-function previewImage(previewArea) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function (e) {
+  function previewImage(previewArea) {
+    const file = event.target.files[0];
     const preview = document.getElementById(previewArea);
-    preview.src = e.target.result;
-    preview.style.display = "block";
-  };
 
-  reader.readAsDataURL(file);
-}
-
-async function validateInfoUnitInputs() {
-  const infoInputs = document.querySelectorAll('input[name="addInfo[]"]');
-  const photoInputs = document.querySelectorAll('input[name="addPhoto[]"]');
-  if (infoInputs.length < 1 && photoInputs.length < 1) return false;
-  for (let input of infoInputs) {
-    if (input.value.trim() === "") {
-      let id = input.parentElement;
-      let result = await Swal.fire({
-        title: "Uups...",
-        text: `Info foto dengan ID #${id.id} masih kosong. Apakah Anda ingin melengkapinya?`,
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Ya, lengkapi!",
-        cancelButtonText: "Tidak, lanjutkan!",
-        returnFocus: false,
-      });
-      if (result.isConfirmed) {
-        input.focus();
-        return false;
-      } else continue;
+    if (!file) {
+      preview.src = null;
+      preview.style.display = "none";
+      return;
     }
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      preview.style.display = "block";
+      preview.src = e.target.result;
+      window.scrollTo({
+        left: 0,
+        top: document.body.scrollHeight,
+      });
+    };
+
+    reader.readAsDataURL(file);
   }
 
-  for (let input of photoInputs) {
-    let id = input.parentElement;
-    if (input.files.length === 0) {
-      const result = await Swal.fire({
-        title: "Error...",
-        text: `Foto unit dengan ID #${id.id} masih kosong!`,
-        icon: "error",
-        confirmButtonText: "Oke",
-        returnFocus: false,
-      });
-      if (result.isConfirmed) {
-        input.focus();
-        return false;
-      }
-    } else {
-      let file = input.files[0];
-      if (!file.type.startsWith("image/")) {
+  async function validateInfoUnitInputs() {
+    const infoInputs = document.querySelectorAll('input[name="addInfo[]"]');
+    const photoInputs = document.querySelectorAll('input[name="addPhoto[]"]');
+    if (infoInputs.length < 1 && photoInputs.length < 1) return false;
+    for (let input of infoInputs) {
+      if (input.value.trim() === "") {
+        let id = input.parentElement;
         let result = await Swal.fire({
+          title: "Uups...",
+          text: `Info foto dengan ID #${id.id} masih kosong. Apakah Anda ingin melengkapinya?`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Ya, lengkapi!",
+          cancelButtonText: "Tidak, lanjutkan!",
+          returnFocus: false,
+        });
+        if (result.isConfirmed) {
+          input.focus();
+          return false;
+        } else continue;
+      }
+    }
+
+    for (let input of photoInputs) {
+      let id = input.parentElement;
+      if (input.files.length === 0) {
+        const result = await Swal.fire({
           title: "Error...",
-          text: `${file.name} bukan foto!`,
+          text: `Foto unit dengan ID #${id.id} masih kosong!`,
           icon: "error",
           confirmButtonText: "Oke",
           returnFocus: false,
@@ -70,16 +70,43 @@ async function validateInfoUnitInputs() {
           input.focus();
           return false;
         }
+      } else {
+        let file = input.files[0];
+        if (!file.type.startsWith("image/")) {
+          let result = await Swal.fire({
+            title: "Error...",
+            text: `${file.name} bukan foto!`,
+            icon: "error",
+            confirmButtonText: "Oke",
+            returnFocus: false,
+          });
+          if (result.isConfirmed) {
+            input.focus();
+            return false;
+          }
+        }
       }
     }
+    return true;
   }
-  return true;
-}
 
-document.addEventListener("DOMContentLoaded", () => {
+  function resetForm() {
+    caseNumberInput.value = null;
+    unitModelInput.value = null;
+    serialNumberInput.value = null;
+    claimNumberInput.value = null;
+    WOInput.value = null;
+    previewWO.style.display = "none";
+    counter = 0;
+    document.querySelectorAll(".divider-custom").forEach((element) => element.remove());
+    modalEl.addEventListener("hidden.bs.modal", function () {
+      caseNumberInput.focus();
+    });
+    modal.hide();
+  }
+
   caseNumberInput.focus();
-  submitButton.addEventListener("click", async (event) => {
-    event.preventDefault();
+  document.getElementById("submitButton").addEventListener("click", async () => {
     let caseNumber = caseNumberInput.value.trim();
     let unitModel = unitModelInput.value.trim();
     let serialNumber = serialNumberInput.value.trim();
@@ -149,17 +176,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let = statusInfoUnitValidation = false;
     statusInfoUnitValidation = await validateInfoUnitInputs();
-    if (statusInfoUnitValidation) document.getElementById("formPPT").submit();
+    if (statusInfoUnitValidation) {
+      modalEl.addEventListener("shown.bs.modal", function () {
+        document.getElementById("fileName").focus();
+      });
+      modal.show();
+    }
   });
-
-  let counter = 0;
 
   function addImage() {
     counter++;
 
     const divider = document.createElement("div");
     divider.id = `unitPhotoChild${counter}`;
-    divider.classList = "mb-3 border p-3 rounded";
+    divider.classList = "mb-3 border p-3 shadow-sm rounded divider-custom";
 
     const labelInfo = document.createElement("label");
     labelInfo.htmlFor = `addInfo${counter}`;
@@ -186,6 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
     previewPhoto.width = 200;
     previewPhoto.height = 200;
     previewPhoto.classList = "img-thumbnail mb-3";
+    previewPhoto.style.display = "none";
 
     const cancelButton = document.createElement("button");
     cancelButton.type = "button";
@@ -200,25 +231,24 @@ document.addEventListener("DOMContentLoaded", () => {
     divider.append(labelInfo, inputInfo, previewPhoto, inputPhoto, cancelButton, pId);
     unitPhoto.append(divider);
 
-    inputPhoto.addEventListener("change", (event) => {
+    inputPhoto.addEventListener("change", () => {
       previewImage(previewPhoto.id);
     });
 
-    cancelButton.addEventListener("click", (event) => {
+    cancelButton.addEventListener("click", () => {
       divider.remove();
     });
 
     return { dividerId: divider.id, inputInfoId: inputInfo.id };
   }
 
-  const addPhoto = document.getElementById("addPhoto");
-  addPhoto.addEventListener("click", (event) => {
+  document.getElementById("addPhoto").addEventListener("click", () => {
     let id = addImage();
     document.getElementById(id.inputInfoId).focus();
     document.getElementById(id.dividerId).scrollIntoView({ block: "start" });
   });
 
-  document.getElementById("WO").addEventListener("change", (event) => {
+  document.getElementById("WO").addEventListener("change", () => {
     let WO = document.getElementById("WO");
     for (let wo of WO.files) {
       if (!wo.type.startsWith("image/")) {
@@ -233,7 +263,12 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
           }
         });
-      } else previewImage("previewWorkOrder");
+      }
     }
+    previewImage("previewWorkOrder");
+  });
+
+  document.getElementById("reset").addEventListener("click", () => {
+    resetForm();
   });
 });
