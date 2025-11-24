@@ -8,7 +8,7 @@ from pptx.enum.shapes import MSO_SHAPE
 from pptx.dml.color import RGBColor
 
 from openpyxl import load_workbook
-from openpyxl import get_column_letter
+from openpyxl.utils import get_column_letter
 from copy import copy
 
 

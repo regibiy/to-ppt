@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@pqina/jquery-pintura": "^9.0.2",
+    "tui-image-editor": "^3.15.3"
+  }
+}

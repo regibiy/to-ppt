@@ -1,65 +1,32 @@
-{% extends "base.html" %} {% block title %} Generate PPT {% endblock %} {% block
-content %}
-<div class="container" style="margin-top: 5rem">
+{% extends "base.html" %} {% block title %} Generate PPT {% endblock %} {% block content %}
+<div class="container shadow-sm rounded border p-2 bg-white" style="margin-top: 5rem">
   <div class="text-center m-2">
-    <a
-      type="button"
-      class="text-decoration-none"
-      data-bs-toggle="modal"
-      data-bs-target="#about"
-      >Tentang Web Ini</a
-    >
+    <a type="button" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#about">Tentang Web Ini</a>
   </div>
-  <form method="POST" autocomplete="off">
+  <!-- <div class="inline-editor" style="height: 70vh"></div>
+  <p><img class="inline-result" src="" alt="" /></p> -->
+  <div id="editor_container" style="height: 80vh"></div>
+  <img id="hasilEdit" src="" alt="" />
+
+  <!-- <form method="POST" autocomplete="off">
     <div class="accordion accordion-flush" id="accordionFlushExample">
       <div class="accordion-item">
         <h2 class="accordion-header">
-          <button
-            class="accordion-button collapsed"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#flush-collapseOne"
-            aria-expanded="false"
-            aria-controls="flush-collapseOne"
-          >
-            Data Customer
-          </button>
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">Data Customer</button>
         </h2>
-        <div
-          id="flush-collapseOne"
-          class="accordion-collapse collapse show"
-          data-bs-parent="#accordionFlushExample"
-        >
+        <div id="flush-collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionFlushExample">
           <div class="accordion-body">
             <div class="row">
               <div class="col-12 col-sm-12 col-md-6">
                 <div class="mb-3">
-                  <label for="namaCustomer" class="form-label"
-                    >Nama Customer <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="namaCustomer"
-                    name="namaCustomer"
-                    placeholder="ex. PT Wahana Inti Selaras"
-                    required
-                  />
+                  <label for="namaCustomer" class="form-label">Nama Customer <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="namaCustomer" name="namaCustomer" placeholder="ex. PT Wahana Inti Selaras" required />
                 </div>
               </div>
               <div class="col-12 col-sm-12 col-md-6">
                 <div class="mb-3">
-                  <label for="location" class="form-label"
-                    >Location <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="location"
-                    name="location"
-                    placeholder="ex. Marau"
-                    required
-                  />
+                  <label for="location" class="form-label">Location <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="location" name="location" placeholder="ex. Marau" required />
                 </div>
               </div>
             </div>
@@ -68,164 +35,71 @@ content %}
       </div>
       <div class="accordion-item">
         <h2 class="accordion-header">
-          <button
-            class="accordion-button collapsed"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#flush-collapseTwo"
-            aria-expanded="false"
-            aria-controls="flush-collapseTwo"
-          >
-            Data Unit Customer
-          </button>
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">Data Unit Customer</button>
         </h2>
-        <div
-          id="flush-collapseTwo"
-          class="accordion-collapse collapse"
-          data-bs-parent="#accordionFlushExample"
-        >
+        <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
           <div class="accordion-body">
             <div class="row">
               <div class="col-12 col-sm-12 col-md-6">
                 <div class="mb-3">
-                  <label for="ppmDate" class="form-label"
-                    >Tanggal PPM Dilakukan
-                    <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="date"
-                    class="form-control"
-                    id="ppmDate"
-                    name="ppmDate"
-                    required
-                  />
+                  <label for="ppmDate" class="form-label">Tanggal PPM Dilakukan <span class="text-danger">*</span></label>
+                  <input type="date" class="form-control" id="ppmDate" name="ppmDate" required />
                 </div>
               </div>
               <div class="col-12 col-sm-12 col-md-6">
                 <div class="mb-3">
-                  <label for="unitModel" class="form-label"
-                    >Unit Model <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="unitModel"
-                    name="unitModel"
-                    placeholder="ex. JD 6095B"
-                    required
-                  />
+                  <label for="unitModel" class="form-label">Unit Model <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="unitModel" name="unitModel" placeholder="ex. JD 6095B" required />
                 </div>
               </div>
             </div>
             <div class="row">
               <div class="col-12 col-sm-12 col-md-6">
                 <div class="mb-3">
-                  <label for="serialNumber" class="form-label"
-                    >Serial Number Unit
-                    <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="serialNumber"
-                    name="serialNumber"
-                    placeholder="ex. 1PYxxx9"
-                    required
-                  />
+                  <label for="serialNumber" class="form-label">Serial Number Unit <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="serialNumber" name="serialNumber" placeholder="ex. 1PYxxx9" required />
                 </div>
               </div>
               <div class="col-12 col-sm-12 col-md-6">
                 <div class="mb-3">
-                  <label for="engineNumber" class="form-label"
-                    >Engine Number Unit</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="engineNumber"
-                    name="engineNumber"
-                    placeholder="ex. PYxxx8"
-                    required
-                  />
+                  <label for="engineNumber" class="form-label">Engine Number Unit</label>
+                  <input type="text" class="form-control" id="engineNumber" name="engineNumber" placeholder="ex. PYxxx8" required />
                 </div>
               </div>
             </div>
             <div class="row">
               <div class="col-12 col-sm-12 col-md-6">
                 <div class="mb-3">
-                  <label for="codeNumberUnit" class="form-label"
-                    >Code Number Unit</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="codeNumberUnit"
-                    name="codeNumberUnit"
-                    placeholder="ex. TRC1-01"
-                    required
-                  />
+                  <label for="codeNumberUnit" class="form-label">Code Number Unit</label>
+                  <input type="text" class="form-control" id="codeNumberUnit" name="codeNumberUnit" placeholder="ex. TRC1-01" required />
                 </div>
               </div>
               <div class="col-12 col-sm-12 col-md-6">
                 <div class="mb-3">
-                  <label for="unitStatus" class="form-label"
-                    >Unit Status <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="unitStatus"
-                    name="unitStatus"
-                    placeholder="ex. Breakdown"
-                    required
-                  />
+                  <label for="unitStatus" class="form-label">Unit Status <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="unitStatus" name="unitStatus" placeholder="ex. Breakdown" required />
                 </div>
               </div>
             </div>
             <div class="row">
               <div class="col-12 col-sm-12 col-md-6">
                 <div class="mb-3">
-                  <label for="unitPicture" class="form-label"
-                    >Unit Picture <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="file"
-                    class="form-control"
-                    id="unitPicture"
-                    name="unitPicture"
-                    required
-                  />
+                  <label for="unitPicture" class="form-label">Unit Picture <span class="text-danger">*</span></label>
+                  <input type="file" class="form-control" id="unitPicture" name="unitPicture" required />
                 </div>
               </div>
               <div class="col-12 col-sm-12 col-md-6">
                 <div class="mb-3">
-                  <label for="serialNumberPicture" class="form-label"
-                    >Foto Serial Number
-                    <span class="text-danger">*</span></label
-                  >
-                  <input
-                    type="file"
-                    class="form-control"
-                    id="serialNumberPicture"
-                    name="serialNumberPicture"
-                    required
-                  />
+                  <label for="serialNumberPicture" class="form-label">Foto Serial Number <span class="text-danger">*</span></label>
+                  <input type="file" class="form-control" id="serialNumberPicture" name="serialNumberPicture" required />
                 </div>
               </div>
             </div>
             <div class="row">
               <div class="col-12 col-sm-12 col-md-6">
                 <div class="mb-3">
-                  <label for="hourMeters" class="form-label"
-                    >Foto Hour Meter</label
-                  >
-                  <input
-                    type="file"
-                    class="form-control"
-                    id="hourMeters"
-                    name="hourMeters"
-                    required
-                  />
+                  <label for="hourMeters" class="form-label">Foto Hour Meter</label>
+                  <input type="file" class="form-control" id="hourMeters" name="hourMeters" required />
                 </div>
               </div>
             </div>
@@ -234,33 +108,16 @@ content %}
       </div>
       <div class="accordion-item">
         <h2 class="accordion-header">
-          <button
-            class="accordion-button collapsed"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#flush-collapseThree"
-            aria-expanded="false"
-            aria-controls="flush-collapseThree"
-          >
-            Hasil Inspection
-          </button>
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">Hasil Inspection</button>
         </h2>
-        <div
-          id="flush-collapseThree"
-          class="accordion-collapse collapse"
-          data-bs-parent="#accordionFlushExample"
-        >
+        <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
           <div class="accordion-body">
-            Placeholder content for this accordion, which is intended to
-            demonstrate the <code>.accordion-flush</code> class. This is the
-            third item’s accordion body. Nothing more exciting happening here in
-            terms of content, but just filling up the space to make it look, at
-            least at first glance, a bit more representative of how this would
-            look in a real-world application.
+            Placeholder content for this accordion, which is intended to demonstrate the <code>.accordion-flush</code> class. This is the third item’s accordion body. Nothing more exciting happening here in terms of content, but just
+            filling up the space to make it look, at least at first glance, a bit more representative of how this would look in a real-world application.
           </div>
         </div>
       </div>
     </div>
-  </form>
+  </form> -->
 </div>
 {% endblock %}

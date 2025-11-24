@@ -1,171 +1,69 @@
-{% extends "base.html" %} {% block title %} Generate PPT {% endblock %} {% block
-content %}
+{% extends "base.html" %} {% block title %} Generate PPT {% endblock %} {% block content %}
 <div class="container mb-4" style="margin-top: 5rem">
   <div class="text-center m-2">
-    <a
-      type="button"
-      class="text-decoration-none"
-      data-bs-toggle="modal"
-      data-bs-target="#about"
-      >Tentang Web Ini</a
-    >
+    <a type="button" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#about">Tentang Web Ini</a>
   </div>
-  <form
-    action="{{ url_for('generate') }}"
-    method="post"
-    enctype="multipart/form-data"
-    autocomplete="off"
-    id="formq"
-  >
+  <form action="{{ url_for('generate') }}" method="post" enctype="multipart/form-data" autocomplete="off" id="formq">
     <div class="row justify-content-center">
-      <div
-        class="col-11 col-sm-11 col-md-10 col-lg-8 col-xl-6 p-3 bg-white shadow-sm rounded border"
-      >
+      <div class="col-11 col-sm-11 col-md-10 col-lg-8 col-xl-6 p-3 bg-white shadow-sm rounded border">
         <div class="mb-3">
-          <label for="caseNumber" class="form-label"
-            >Case Number <span class="text-danger">*</span></label
-          >
-          <input
-            type="text"
-            class="form-control"
-            id="caseNumber"
-            name="caseNumber"
-            placeholder="Masukkan Case Number di Sini"
-            required
-          />
+          <label for="caseNumber" class="form-label">Case Number <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="caseNumber" name="caseNumber" placeholder="Masukkan Case Number di Sini" required />
         </div>
         <div class="mb-3">
-          <label for="unitModel" class="form-label"
-            >Unit Model <span class="text-danger">*</span></label
-          >
-          <input
-            type="text"
-            class="form-control"
-            id="unitModel"
-            name="unitModel"
-            placeholder="Masukkan Unit Model di Sini"
-            required
-          />
+          <label for="unitModel" class="form-label">Unit Model <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="unitModel" name="unitModel" placeholder="Masukkan Unit Model di Sini" required />
         </div>
         <div class="mb-3">
-          <label for="serialNumber" class="form-label"
-            >Serial Number <span class="text-danger">*</span></label
-          >
-          <input
-            type="text"
-            class="form-control"
-            id="serialNumber"
-            name="serialNumber"
-            placeholder="Masukkan Serial Number di Sini"
-            required
-          />
+          <label for="serialNumber" class="form-label">Serial Number <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="serialNumber" name="serialNumber" placeholder="Masukkan Serial Number di Sini" required />
         </div>
         <div class="mb-3">
           <label for="claimNumber" class="form-label">Claim Number</label>
-          <input
-            type="text"
-            class="form-control"
-            id="claimNumber"
-            name="claimNumber"
-            placeholder="Masukkan Claim Number di Sini"
-          />
+          <input type="text" class="form-control" id="claimNumber" name="claimNumber" placeholder="Masukkan Claim Number di Sini" />
         </div>
         <div class="mb-3">
           <div id="previewWO">
-            <img
-              src=""
-              alt="Preview Work Order"
-              id="previewWorkOrder"
-              class="img-thumbnail mb-3"
-              width="200"
-              height="200"
-              style="display: none"
-            />
+            <img src="" alt="Preview Work Order" id="previewWorkOrder" class="img-thumbnail mb-3" width="200" height="200" style="display: none" />
+            <p class="muted">
+              Placeholder text to demonstrate some <a href="#" data-bs-toggle="tooltip" data-bs-title="Default tooltip">inline links</a> with tooltips. This is now just filler, no killer. Content placed here just to mimic the presence of
+              <a href="#" data-bs-toggle="tooltip" data-bs-title="Another tooltip">real text</a>. And all that just to give you an idea of how tooltips would look when used in real-world situations. So hopefully you’ve now seen how
+              <a href="#" data-bs-toggle="tooltip" data-bs-title="Another one here too">these tooltips on links</a> can work in practice, once you use them on
+              <a href="#" data-bs-toggle="tooltip" data-bs-title="The last tip!">your own</a> site or project.
+            </p>
           </div>
           <label for="WO" class="form-label">Foto Form Work Order</label>
-          <input
-            type="file"
-            name="WO"
-            id="WO"
-            class="form-control"
-            accept="image/*"
-            required
-          />
+          <input type="file" name="WO" id="WO" class="form-control" accept="image/*" required />
         </div>
         <hr />
         <div id="unitPhoto"></div>
         <div class="text-center">
-          <button
-            type="button"
-            id="addPhoto"
-            class="btn btn-success-outline-custom"
-          >
-            Tambah Foto Unit
-          </button>
-          <button
-            type="button"
-            name="submitButton"
-            id="submitButton"
-            class="btn btn-success-custom"
-          >
-            Unduh PPT
-          </button>
+          <button type="button" id="addPhoto" class="btn btn-success-outline-custom">Tambah Foto Unit</button>
+          <button type="button" name="submitButton" id="submitButton" class="btn btn-success-custom">Unduh PPT</button>
         </div>
       </div>
     </div>
     <!-- Modal Submit-->
-    <div
-      class="modal fade"
-      id="submit"
-      data-bs-backdrop="static"
-      data-bs-keyboard="false"
-      tabindex="-1"
-      aria-labelledby="submit"
-      aria-hidden="true"
-    >
+    <div class="modal fade" id="submit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="submit" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
             <label for="fileName" class="form-label m-0">Nama File</label>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <input
-              type="text"
-              class="form-control"
-              id="fileName"
-              name="fileName"
-              placeholder="Isi nama file untuk disimpan"
-              aria-describedby="help"
-            />
+            <input type="text" class="form-control" id="fileName" name="fileName" placeholder="Isi nama file untuk disimpan" aria-describedby="help" />
             <div id="help" class="form-text">
-              Apabila nama file tidak diisi, maka secara default akan
-              menggunakan Case Number.
+              Apabila nama file tidak diisi, maka secara default akan menggunakan Case Number.
               <span class="text-danger"
                 ><br />
-                <br />Tekan
-                <span class="poppins-semibold">Reset Form</span> ketika
-                <span class="poppins-semibold">UNDUHAN SELESAI</span> dan ingin
-                membuat laporan lain!</span
+                <br />Tekan <span class="poppins-semibold">Reset Form</span> ketika <span class="poppins-semibold">UNDUHAN SELESAI</span> dan ingin membuat laporan lain!</span
               >
             </div>
           </div>
           <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-success-outline-custom"
-              id="reset"
-            >
-              Reset Form
-            </button>
-            <button type="submit" class="btn btn-success-custom" id="save">
-              Simpan
-            </button>
+            <button type="button" class="btn btn-success-outline-custom" id="reset">Reset Form</button>
+            <button type="submit" class="btn btn-success-custom" id="save">Simpan</button>
           </div>
         </div>
       </div>
