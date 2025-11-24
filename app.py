@@ -7,6 +7,11 @@ from PIL import ImageFont, Image, ImageOps
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.dml.color import RGBColor
 
+from openpyxl import load_workbook
+from openpyxl import get_column_letter
+from copy import copy
+
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -155,7 +160,10 @@ def generate():
 
 @app.route("/generate2", methods=["POST"]) #excelppm
 def generate2():
-    return "OK"
+    def copyRow(ws, srcRow, tgtRow):
+        for col in range(1, ws.max_column + 1):
+            colLetter = get_column_letter(col)
+
 
 if __name__ == "__main__":
     app.run(debug=True) 
