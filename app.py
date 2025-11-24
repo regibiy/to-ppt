@@ -13,7 +13,11 @@ app = Flask(__name__)
 def home():
     return render_template("index.html")
 
-@app.route("/generate", methods=["POST"])
+@app.route("/ppmreport")
+def ppmReport():
+    return render_template("to-excel.html")
+
+@app.route("/generate", methods=["POST"]) #pptwarranty
 def generate():
     fields = ["caseNumber", "unitModel", "serialNumber", "claimNumber"]
     data = {key: request.form[key].upper() for key in fields}
@@ -148,6 +152,10 @@ def generate():
         download_name = f"{fileName}.pptx",
         mimetype="application/vnd.openxmlformats-officedocument.presentationml.presentation"
     )
+
+@app.route("/generate2", methods=["POST"]) #excelppm
+def generate2():
+    return "OK"
 
 if __name__ == "__main__":
     app.run(debug=True) 
