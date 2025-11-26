@@ -1,91 +1,92 @@
-// const FilerobotImageEditor = window.FilerobotImageEditor;
-// const { TABS, TOOLS } = FilerobotImageEditor;
+const FilerobotImageEditor = window.FilerobotImageEditor;
+const { TABS, TOOLS } = FilerobotImageEditor;
 
-// const config = {
-//   source: "https://scaleflex.airstore.io/demo/stephen-walker-unsplash.jpg",
-//   avoidChangesNotSavedAlertOnLeave: true,
-//   disableSaveIfNoChanges: true,
-//   imageOperations: {
-//     allowMoving: true,
-//   },
-//   onBeforeSave: (imageFileInfo) => {
-//     return false;
-//   },
-//   onSave: (editedImageObject, designState) => {
-//     const imgTag = document.getElementById("hasilEdit");
+const config = {
+  source: "https://scaleflex.airstore.io/demo/stephen-walker-unsplash.jpg",
+  avoidChangesNotSavedAlertOnLeave: true,
+  disableSaveIfNoChanges: true,
+  imageOperations: {
+    allowMoving: true,
+  },
+  onBeforeSave: (imageFileInfo) => {
+    return false;
+  },
+  onSave: (editedImageObject, designState) => {
+    const imgTag = document.getElementById("hasilEdit");
 
-//     // hasil gambar dalam bentuk Base64
-//     const base64 = editedImageObject.imageBase64;
+    // hasil gambar dalam bentuk Base64
+    const base64 = editedImageObject.imageBase64;
 
-//     // tampilkan
-//     imgTag.src = base64;
-//     imgTag.style.display = "block";
-//   },
+    // tampilkan
+    imgTag.src = base64;
+    imgTag.style.display = "block";
+  },
 
-//   annotationsCommon: {
-//     fill: "#ff0000",
-//   },
+  annotationsCommon: {
+    fill: "#ff0000",
+  },
 
-//   Text: { text: "Filerobot..." },
+  Text: { text: "Filerobot..." },
 
-//   Rotate: { angle: 90, componentType: "slider" },
+  Rotate: { angle: 90, componentType: "slider" },
 
-//   translations: {
-//     profile: "Profile",
-//     coverPhoto: "Cover photo",
-//     facebook: "Facebook",
-//     socialMedia: "Social Media",
-//     fbProfileSize: "180x180px",
-//     fbCoverPhotoSize: "820x312px",
-//   },
+  translations: {
+    profile: "Profile",
+    coverPhoto: "Cover photo",
+    facebook: "Facebook",
+    socialMedia: "Social Media",
+    fbProfileSize: "180x180px",
+    fbCoverPhotoSize: "820x312px",
+  },
 
-//   Crop: {
-//     presetsItems: [
-//       {
-//         titleKey: "classicTv",
-//         descriptionKey: "4:3",
-//         ratio: 4 / 3,
-//       },
-//       {
-//         titleKey: "cinemascope",
-//         descriptionKey: "21:9",
-//         ratio: 21 / 9,
-//       },
-//     ],
+  Crop: {
+    presetsItems: [
+      {
+        titleKey: "classicTv",
+        descriptionKey: "4:3",
+        ratio: 4 / 3,
+      },
+      {
+        titleKey: "cinemascope",
+        descriptionKey: "21:9",
+        ratio: 21 / 9,
+      },
+    ],
 
-//     presetsFolders: [
-//       {
-//         titleKey: "socialMedia",
-//         groups: [
-//           {
-//             titleKey: "facebook",
-//             items: [
-//               { titleKey: "profile", width: 180, height: 180, descriptionKey: "fbProfileSize" },
-//               { titleKey: "coverPhoto", width: 820, height: 312, descriptionKey: "fbCoverPhotoSize" },
-//             ],
-//           },
-//         ],
-//       },
-//     ],
-//   },
+    presetsFolders: [
+      {
+        titleKey: "socialMedia",
+        groups: [
+          {
+            titleKey: "facebook",
+            items: [
+              { titleKey: "profile", width: 180, height: 180, descriptionKey: "fbProfileSize" },
+              { titleKey: "coverPhoto", width: 820, height: 312, descriptionKey: "fbCoverPhotoSize" },
+            ],
+          },
+        ],
+      },
+    ],
+  },
 
-//   tabsIds: [TABS.ADJUST, TABS.ANNOTATE],
-//   defaultTabId: TABS.ANNOTATE,
-//   defaultToolId: TOOLS.TEXT,
-// };
+  tabsIds: [TABS.ADJUST, TABS.ANNOTATE],
+  defaultTabId: TABS.ANNOTATE,
+  defaultToolId: TOOLS.TEXT,
+};
 
-// const filerobotImageEditor = new FilerobotImageEditor(document.querySelector("#editor_container"), config);
+const filerobotImageEditor = new FilerobotImageEditor(document.querySelector("#editor_container"), config);
 
-// filerobotImageEditor.render({
-//   onClose: (reason) => {
-//     console.log("Closing reason", reason);
-//     filerobotImageEditor.terminate();
-//   },
-// });
+filerobotImageEditor.render({
+  onClose: (reason) => {
+    console.log("Closing reason", reason);
+    filerobotImageEditor.terminate();
+  },
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
   [...tooltipTriggerList].map((tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl));
+
   const unitPhoto = document.getElementById("unitPhoto");
   const caseNumberInput = document.getElementById("caseNumber");
   const unitModelInput = document.getElementById("unitModel");
